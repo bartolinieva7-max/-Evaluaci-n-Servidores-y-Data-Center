@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Evaluación · Servidores Rackeables y Data Center</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #eef2f7;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 1.2rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .evaluation-container {
+      max-width: 950px;
+      width: 100%;
+      margin: 0 auto;
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px -12px rgba(0,20,40,0.2);
+      padding: 1.8rem 1.8rem 2rem;
+      border: 1px solid #cbd6e6;
+    }
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: #1e3a5f;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 3px solid #9bb7d4;
+      padding-bottom: 0.7rem;
+      margin-bottom: 1.2rem;
+    }
+    h1 small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #4a627a;
+      margin-left: auto;
+    }
+    .info-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      background: #e1e9f2;
+      padding: 0.7rem 1.2rem;
+      border-radius: 60px;
+    }
+    .score-box {
+      background: #1e3a5f;
+      color: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .badge {
+      background: white;
+      color: #1e3a5f;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .questions-area {
+      margin: 1.5rem 0 1rem;
+    }
+    .question-card {
+      background: #fafcff;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.3rem;
+      border: 1px solid #d0dfee;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+    }
+    .question-header {
+      display: flex;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 1rem;
+      align-items: baseline;
+    }
+    .q-num {
+      background: #1e3a5f;
+      color: white;
+      border-radius: 30px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin: 0.5rem 0 0.8rem;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      background: #ffffff;
+      border: 1.5px solid #d7e2ee;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .option:hover {
+      background: #eef4fc;
+      border-color: #7a9bcb;
+    }
+    .option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.2rem;
+      height: 1.2rem;
+      border: 2px solid #6f8db0;
+      border-radius: 50%;
+      margin-top: 0.1rem;
+      cursor: pointer;
+      background: white;
+      flex-shrink: 0;
+    }
+    .option input[type="radio"]:checked {
+      background-color: #1e6f5c;
+      border-color: #1e6f5c;
+      box-shadow: inset 0 0 0 3px white;
+    }
+    .option label {
+      flex: 1;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #1f2e3f;
+      line-height: 1.4;
+    }
+    .feedback {
+      margin-top: 0.8rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.8rem;
+      font-size: 0.85rem;
+      background: #f7f9fc;
+      border-left: 5px solid;
+      color: #2a405c;
+    }
+    .feedback.correct {
+      border-left-color: #2b8c5e;
+      background: #e9f6ef;
+    }
+    .feedback.incorrect {
+      border-left-color: #c13b3b;
+      background: #ffeeee;
+    }
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.8rem 0 0.5rem;
+    }
+    .btn {
+      border: none;
+      background: #dbe4ed;
+      color: #1e3a5f;
+      font-weight: 600;
+      padding: 0.75rem 1.8rem;
+      border-radius: 60px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #b8cade;
+    }
+    .btn-primary {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #102b44;
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: #eef3f9;
+    }
+    .btn-secondary:hover {
+      background: #dae2ee;
+    }
+    .btn-success {
+      background: #2b8c5e;
+      color: white;
+      border: none;
+    }
+    .btn-success:hover {
+      background: #1f7049;
+    }
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #6e8898;
+    }
+    @media (max-width: 600px) {
+      body { padding: 0.8rem; }
+      .evaluation-container { padding: 1.2rem; }
+      h1 { font-size: 1.5rem; flex-wrap: wrap; }
+      .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="evaluation-container">
+  <h1>
+    🖥️ Evaluación · Servidores y Data Center
+    <small>10 preguntas aleatorias</small>
+  </h1>
+  <div class="info-bar">
+    <span class="badge">🎲 35 preguntas en el banco</span>
+    <span class="score-box" id="scoreDisplay">0 / 10</span>
+  </div>
+
+  <div id="questionsArea" class="questions-area">
+    <!-- Aquí se renderizan las 10 preguntas -->
+  </div>
+
+  <div class="action-buttons">
+    <button id="checkBtn" class="btn btn-success">✅ Corregir evaluación</button>
+    <button id="newTestBtn" class="btn btn-primary">🔄 Nueva evaluación (siguiente alumna)</button>
+  </div>
+  <div class="footer-note">
+    ✔️ Cada pregunta correcta suma 1 punto. Máximo 10. Cada nueva prueba mezcla el banco.
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- BANCO DE PREGUNTAS UNIFICADO (35 preguntas) ----------
+    // Bloque 1: 15 preguntas de Servidores Rackeables (archivo deepseek_html_20260416_e036fa.html)
+    // Bloque 2: 20 preguntas de Infraestructura de Data Center (archivo deepseek_html_20260416_96ff40.html)
+    
+    const bank = [];
+
+    // ===== BLOQUE 1: SERVIDORES RACKEABLES (15 preguntas) =====
+    const rackQuestions = [
+      {
+        text: "¿Cuál es el ancho estándar de los bastidores (racks) para los que están diseñados estos servidores?",
+        options: ["17 pulgadas.", "19 pulgadas.", "21 pulgadas.", "24 pulgadas."],
+        correct: "B",
+        explanation: "19 pulgadas: ancho estándar para bastidores de equipos rackeables según normativa."
+      },
+      {
+        text: "Según la normativa IEC 60297, ¿a cuánto equivale exactamente una unidad de rack (1U)?",
+        options: ["1.5 pulgadas (38.1 mm).", "1.75 pulgadas (44.45 mm).", "2.0 pulgadas (50.8 mm).", "1.85 pulgadas (46.99 mm)."],
+        correct: "B",
+        explanation: "1U = 1.75 pulgadas (44.45 mm) según IEC 60297."
+      },
+      {
+        text: "¿Qué función cumple la memoria RAM de tipo ECC en un servidor empresarial?",
+        options: ["Duplicar la velocidad de procesamiento de datos.", "Permitir el intercambio de módulos sin apagar el equipo.", "Detectar y corregir errores de bits para garantizar la integridad de los datos.", "Reducir el consumo eléctrico del sistema de memoria."],
+        correct: "C",
+        explanation: "Memoria ECC detecta y corrige errores de bits, esencial en servidores."
+      },
+      {
+        text: "¿Qué capacidad técnica permite cambiar un componente, como un disco duro o un ventilador, mientras el servidor sigue operando?",
+        options: ["Virtualización por hardware.", "Gestión fuera de banda (OOB).", "Tecnología Hot-swap (sustitución en caliente).", "Configuración LACP."],
+        correct: "C",
+        explanation: "Hot-swap permite reemplazar componentes sin apagar el servidor."
+      },
+      {
+        text: "En cuanto a las fuentes de alimentación (PSU), ¿qué significa una configuración de redundancia N+1 o 1+1?",
+        options: ["Que el servidor consume el doble de energía para ser más rápido.", "Que existe una fuente de reserva para mantener el equipo encendido si una falla.", "Que ambas fuentes deben ser de fabricantes distintos por seguridad.", "Que el servidor solo puede encender si ambas fuentes están conectadas."],
+        correct: "B",
+        explanation: "Redundancia N+1 o 1+1: una fuente de reserva ante fallos."
+      },
+      {
+        text: "De acuerdo con el video 'El camino del reparador', ¿cuánto tiempo aproximado puede tardar un servidor en ponerse en funcionamiento total tras un apagado completo debido a sus comprobaciones internas?",
+        options: ["5 minutos.", "10 minutos.", "20 minutos.", "45 minutos."],
+        correct: "C",
+        explanation: "Aproximadamente 20 minutos de autocomprobaciones (POST avanzado)."
+      },
+      {
+        text: "¿Por qué los servidores suelen emitir un ruido muy fuerte al momento de arrancar?",
+        options: ["Porque el sistema operativo es muy pesado.", "Porque los discos rígidos giran a máxima velocidad para calentarse.", "Porque el servidor coloca los ventiladores a máximas revoluciones para comprobar su funcionamiento.", "Porque las fuentes de alimentación liberan energía acumulada."],
+        correct: "C",
+        explanation: "Los ventiladores se ponen al 100% al arrancar para verificar su correcto funcionamiento."
+      },
+      {
+        text: "En el panel frontal, ¿qué indica generalmente un LED de color ámbar?",
+        options: ["Que el sistema funciona correctamente.", "Una advertencia o aviso de que algo requiere atención.", "Un fallo crítico de hardware que requiere apagado inmediato.", "Que el servidor está en modo de ahorro de energía."],
+        correct: "B",
+        explanation: "LED ámbar = advertencia o atención no crítica."
+      },
+      {
+        text: "¿Cómo se denomina a la gestión que permite a un técnico reiniciar o reparar un servidor de forma remota, incluso si el sistema operativo ha fallado?",
+        options: ["Gestión dentro de banda.", "Gestión fuera de banda (Out-of-band / OOB).", "Acceso por consola local VGA.", "Redundancia de datos RAID."],
+        correct: "B",
+        explanation: "Gestión fuera de banda (OOB) permite control remoto incluso sin SO."
+      },
+      {
+        text: "¿Para qué tipo de tareas es ideal un servidor de formato 1U debido a su alta densidad?",
+        options: ["Alojamiento de cientos de sitios web (servidores web/front-end).", "Entrenamiento de modelos masivos de inteligencia artificial.", "Almacenamiento denso con más de 24 discos de 3.5\".", "Estaciones de trabajo de alto rendimiento gráfico (HPC)."],
+        correct: "A",
+        explanation: "1U ideal para alta densidad en servidores web/front-end."
+      },
+      {
+        text: "¿Qué equipo de protección personal menciona el técnico en el video para evitar daños por estática durante el mantenimiento?",
+        options: ["Casco y botas con punta de acero.", "Pulsera antiestática y talonera antiestática.", "Guantes térmicos gruesos de cuero.", "Gafas de seguridad y mascarilla."],
+        correct: "B",
+        explanation: "Pulsera antiestática + talonera antiestática contra descargas."
+      },
+      {
+        text: "¿En qué consiste la tecnología 'Memory Mirroring' mencionada en las fuentes?",
+        options: ["En aumentar la frecuencia de la memoria RAM al doble.", "En crear una copia exacta de los datos en la memoria para que, si un módulo falla, otro tome el control.", "En proyectar el estado de la memoria en la pantalla frontal del rack.", "En utilizar la memoria RAM como si fuera un disco duro de alta velocidad."],
+        correct: "B",
+        explanation: "Memory Mirroring crea una copia exacta de datos en RAM para redundancia."
+      },
+      {
+        text: "¿Cuál es la utilidad del 'botón de localización' en el panel frontal de un servidor?",
+        options: ["Formatear los discos duros automáticamente.", "Enviar una señal GPS a la central del fabricante.", "Encender una luz específica para identificar físicamente la máquina en un rack lleno de servidores idénticos.", "Apagar el servidor de forma remota."],
+        correct: "C",
+        explanation: "Botón de localización activa una luz para identificar el servidor en el rack."
+      },
+      {
+        text: "¿Qué tecnología se utiliza para distribuir los datos entre varios discos físicos para que, si uno falla, la información pueda reconstruirse?",
+        options: ["NVMe.", "RAID.", "ECC.", "LACP."],
+        correct: "B",
+        explanation: "RAID distribuye datos con tolerancia a fallos de discos."
+      },
+      {
+        text: "¿Cuál es una práctica de seguridad crítica recomendada inmediatamente después de instalar un servidor?",
+        options: ["Desactivar todos los ventiladores para ahorrar energía.", "Cambiar las credenciales (contraseñas) por defecto de las interfaces de gestión.", "Abrir todos los puertos de red para facilitar el acceso.", "Quitar las fuentes redundantes para tener repuestos a mano."],
+        correct: "B",
+        explanation: "Cambiar contraseñas por defecto de gestión es una práctica de seguridad crítica."
+      }
+    ];
+
+    rackQuestions.forEach((q, idx) => {
+      bank.push({
+        id: `rack-${idx}`,
+        text: q.text,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      });
+    });
+
+    // ===== BLOQUE 2: INFRAESTRUCTURA DE DATA CENTER (20 preguntas) =====
+    const dcQuestions = [
+      { text: "¿Cuál es el ancho estándar de los bastidores (racks) que se deben utilizar según la normativa IEC 60297?",
+        options: ["24 pulgadas.", "19 pulgadas.", "10 pulgadas."],
+        correct: "B", explanation: "El proyecto especifica bastidores estándar de 19 pulgadas bajo la norma IEC 60297." },
+      { text: "Para servidores de tipo Web/Front-end, ¿qué característica de distribución en el rack es prioritaria?",
+        options: ["Alta densidad (Unidades de 1U).", "Almacenamiento masivo (Unidades de 4U).", "Gran tamaño físico para ventilación natural."],
+        correct: "A", explanation: "Para servidores Web/Front-end se busca alta densidad (1U)." },
+      { text: "¿Qué tecnologías de CPU son indispensables para los servicios de virtualización en este proyecto?",
+        options: ["Overclocking avanzado.", "Intel VT-x o AMD-V.", "Solo procesadores con arquitectura ARM."],
+        correct: "B", explanation: "Requiere virtualización de hardware como Intel VT-x o AMD-V." },
+      { text: "¿Cuál es la función principal de implementar módulos de memoria RAM con tecnología ECC?",
+        options: ["Aumentar la velocidad de procesamiento de video.", "Garantizar la integridad de los datos.", "Reducir el consumo eléctrico total del servidor."],
+        correct: "B", explanation: "ECC garantiza integridad de datos." },
+      { text: "En el diseño de almacenamiento, ¿qué permiten las bahías de tipo 'hot-swap'?",
+        options: ["Cambiar discos sin apagar el servidor para asegurar tolerancia a fallos.", "Enfriar los discos mediante nitrógeno líquido.", "Aumentar la capacidad de la memoria RAM de forma virtual."],
+        correct: "A", explanation: "Hot-swap permite intercambio en caliente para tolerancia a fallos." },
+      { text: "¿Qué configuración de fuente de alimentación (PSU) se sugiere para garantizar la continuidad operativa?",
+        options: ["Fuente única de alta potencia.", "Configuración N+1 o 1+1.", "Conexión directa a la red pública sin protección."],
+        correct: "B", explanation: "Configuración N+1 o 1+1 para redundancia." },
+      { text: "¿Para qué se utiliza el sistema de gestión fuera de banda (OOB)?",
+        options: ["Para instalar aplicaciones de oficina de forma remota.", "Para el monitoreo remoto sin depender del sistema operativo.", "Para mejorar la velocidad de navegación por internet de los usuarios."],
+        correct: "B", explanation: "OOB (iDRAC, iLO, IMM) permite monitoreo independiente del SO." },
+      { text: "¿Cuál es el propósito de configurar LACP en la red del Data Center?",
+        options: ["Encriptar todos los correos electrónicos salientes.", "La agregación de enlaces y redundancia.", "Limitar el acceso físico al rack."],
+        correct: "B", explanation: "LACP permite agregación de enlaces y redundancia." },
+      { text: "¿Qué protocolo de seguridad se debe implementar para las interfaces de gestión?",
+        options: ["Protocolo HTTP abierto.", "Certificados TLS, segmentación por VLAN y autenticación LDAP.", "Uso exclusivo de contraseñas impresas en el rack."],
+        correct: "B", explanation: "Seguridad crítica incluye TLS, VLAN de gestión y LDAP." },
+      { text: "¿Cómo debe ser el flujo de aire en el sistema de refrigeración del rack?",
+        options: ["De abajo hacia arriba (bottom-to-top).", "De adelante hacia atrás (front-to-back).", "El flujo de aire no es necesario si hay aire acondicionado en la sala."],
+        correct: "B", explanation: "Refrigeración front-to-back." },
+      { text: "¿Qué tipo de servidores requieren un equilibrio entre procesamiento y almacenamiento?",
+        options: ["Servidores de Bases de Datos y Virtualización.", "Servidores de Backup exclusivamente.", "Servidores de Front-end de baja potencia."],
+        correct: "A", explanation: "Bases de Datos y Virtualización requieren equilibrio." },
+      { text: "¿Qué normativa rige el dimensionamiento físico del proyecto?",
+        options: ["ISO 9001.", "IEC 60297.", "TIA/EIA 568."],
+        correct: "B", explanation: "IEC 60297 para bastidores." },
+      { text: "¿Cuál es el objetivo principal de la migración que realiza la empresa?",
+        options: ["Eliminar el uso de internet en la oficina.", "Migrar de servidores tipo torre a una arquitectura de servidores rackeables.", "Reducir el número de empleados en el área de TI."],
+        correct: "B", explanation: "Migrar de torres a rackeables para centralización." },
+      { text: "Para soluciones de Backup y GPU, ¿qué configuración física se recomienda?",
+        options: ["Unidades de 1U para ahorrar el máximo espacio.", "Unidades que permitan almacenamiento denso y alto rendimiento.", "Servidores externos fuera del Data Center."],
+        correct: "B", explanation: "Backup y GPU requieren almacenamiento denso y alto rendimiento." },
+      { text: "¿Qué controladores se mencionan para la gestión fuera de banda (OOB)?",
+        options: ["Teclado y ratón inalámbricos.", "iDRAC, iLO o IMM.", "Controladores de dominio Windows únicamente."],
+        correct: "B", explanation: "iDRAC, iLO, IMM son controladores OOB." },
+      { text: "¿Qué niveles de RAID se mencionan como ejemplos para la tolerancia a fallos?",
+        options: ["RAID 0 solamente.", "RAID 1, 5, 10, etc.", "No se recomienda el uso de RAID."],
+        correct: "B", explanation: "RAID 1,5,10 ofrecen tolerancia a fallos." },
+      { text: "¿Por qué es necesaria la segmentación de red en el protocolo de seguridad?",
+        options: ["Para que los servidores funcionen más rápido.", "Para crear una VLAN de gestión dedicada a las interfaces críticas.", "Para separar el tráfico de internet del tráfico de la cafetería."],
+        correct: "B", explanation: "Segmentación con VLAN de gestión para proteger interfaces críticas." },
+      { text: "¿Qué tipo de conectividad se debe diseñar para la red según el proyecto?",
+        options: ["Únicamente Wi-Fi de alta velocidad.", "Múltiples puertos Ethernet y fibra óptica.", "Cables coaxiales de televisión."],
+        correct: "B", explanation: "Múltiples puertos Ethernet y fibra óptica." },
+      { text: "¿Cuál es uno de los beneficios buscados al optimizar el espacio físico?",
+        options: ["Poder instalar una cocina dentro del Data Center.", "Centralizar operaciones tecnológicas y mejorar la gestión de recursos.", "Aumentar el ruido ambiental para mejorar la concentración."],
+        correct: "B", explanation: "Centralizar operaciones y optimizar espacio mejora la gestión." },
+      { text: "¿Qué se utiliza para evitar el sobrecalentamiento de los equipos?",
+        options: ["Abrir las ventanas del edificio.", "Monitorización constante de sensores térmicos y flujo front-to-back.", "Apagar los servidores durante la noche."],
+        correct: "B", explanation: "Monitorización térmica y flujo front-to-back." }
+    ];
+
+    dcQuestions.forEach((q, idx) => {
+      bank.push({
+        id: `dc-${idx}`,
+        text: q.text,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      });
+    });
+
+    // ---------- CONFIGURACIÓN DE LA EVALUACIÓN ----------
+    const TOTAL_QUESTIONS = 10;               // preguntas por evaluación
+    let currentQuestions = [];                // array de objetos pregunta seleccionados
+    let userAnswers = new Array(TOTAL_QUESTIONS).fill(null); // 'A','B','C','D' o null
+
+    const questionsArea = document.getElementById('questionsArea');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const checkBtn = document.getElementById('checkBtn');
+    const newTestBtn = document.getElementById('newTestBtn');
+
+    // Función para seleccionar N preguntas aleatorias sin repetición
+    function shufflePickN(n) {
+      const indices = Array.from({ length: bank.length }, (_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      return indices.slice(0, n).map(idx => bank[idx]);
+    }
+
+    function resetAnswers() {
+      userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+    }
+
+    function generateNewTest() {
+      currentQuestions = shufflePickN(TOTAL_QUESTIONS);
+      resetAnswers();
+      renderQuestions();
+      updateScoreDisplay(0);
+    }
+
+    function updateScoreDisplay(scoreValue = null) {
+      if (scoreValue === null) {
+        let correct = 0;
+        for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+          if (userAnswers[i] && userAnswers[i] === currentQuestions[i].correct) correct++;
+        }
+        scoreDisplay.textContent = `${correct} / 10`;
+      } else {
+        scoreDisplay.textContent = `${scoreValue} / 10`;
+      }
+    }
+
+    function renderQuestions() {
+      if (!currentQuestions.length) return;
+      let html = '';
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const q = currentQuestions[i];
+        const selected = userAnswers[i];
+        const letters = q.options.length === 4 ? ['A','B','C','D'] : ['A','B','C'];
+        
+        let optionsHtml = '';
+        q.options.forEach((optText, optIdx) => {
+          const letter = letters[optIdx];
+          const checked = (selected === letter) ? 'checked' : '';
+          optionsHtml += `
+            <div class="option" data-qidx="${i}" data-letter="${letter}">
+              <input type="radio" name="q${i}" value="${letter}" id="q${i}_${letter}" ${checked}>
+              <label for="q${i}_${letter}"><strong>${letter})</strong> ${optText}</label>
+            </div>
+          `;
+        });
+
+        html += `
+          <div class="question-card" id="card-${i}">
+            <div class="question-header">
+              <span class="q-num">Pregunta ${i+1}</span>
+              <span>${q.text}</span>
+            </div>
+            <div class="options">
+              ${optionsHtml}
+            </div>
+            <div class="feedback" id="fb-${i}"></div>
+          </div>
+        `;
+      }
+      questionsArea.innerHTML = html;
+
+      // Asignar eventos a los radios y opciones
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const radios = document.querySelectorAll(`input[name="q${i}"]`);
+        radios.forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const val = e.target.value;
+            userAnswers[i] = val;
+            const fbDiv = document.getElementById(`fb-${i}`);
+            if (fbDiv) {
+              fbDiv.innerHTML = '';
+              fbDiv.className = 'feedback';
+            }
+            updateScoreDisplay();
+          });
+        });
+        const optionDivs = document.querySelectorAll(`.option[data-qidx="${i}"]`);
+        optionDivs.forEach(div => {
+          div.addEventListener('click', (e) => {
+            const radio = div.querySelector('input[type="radio"]');
+            if (radio && !radio.checked) {
+              radio.checked = true;
+              const letter = div.getAttribute('data-letter');
+              userAnswers[i] = letter;
+              const fbDiv = document.getElementById(`fb-${i}`);
+              if (fbDiv) { fbDiv.innerHTML = ''; fbDiv.className = 'feedback'; }
+              updateScoreDisplay();
+            }
+          });
+        });
+      }
+      updateScoreDisplay();
+    }
+
+    function correctEvaluation() {
+      let correctCount = 0;
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const q = currentQuestions[i];
+        const userAns = userAnswers[i];
+        const fbDiv = document.getElementById(`fb-${i}`);
+        if (!fbDiv) continue;
+        
+        const isCorrect = (userAns && userAns === q.correct);
+        if (isCorrect) correctCount++;
+        
+        const correctLetter = q.correct;
+        const letters = q.options.length === 4 ? ['A','B','C','D'] : ['A','B','C'];
+        const correctIdx = letters.indexOf(correctLetter);
+        const correctText = q.options[correctIdx];
+        
+        let fbHtml = '';
+        if (!userAns) {
+          fbHtml = `<span style="color:#b85e00;">⚠️ Sin responder. La respuesta correcta es ${correctLetter}) ${correctText}.<br>${q.explanation}</span>`;
+          fbDiv.className = 'feedback incorrect';
+        } else if (isCorrect) {
+          fbHtml = `✅ <strong>¡Correcto!</strong> ${q.explanation}`;
+          fbDiv.className = 'feedback correct';
+        } else {
+          fbHtml = `❌ <strong>Incorrecto.</strong> La respuesta correcta es ${correctLetter}) ${correctText}.<br>${q.explanation}`;
+          fbDiv.className = 'feedback incorrect';
+        }
+        fbDiv.innerHTML = fbHtml;
+      }
+      updateScoreDisplay(correctCount);
+      alert(`📊 Evaluación corregida.\nAciertos: ${correctCount} de 10 (${correctCount*10}%)\nRevisá los detalles en pantalla.`);
+    }
+
+    // Inicializar
+    function init() {
+      generateNewTest();
+    }
+
+    checkBtn.addEventListener('click', () => {
+      if (!currentQuestions.length) return;
+      correctEvaluation();
+    });
+
+    newTestBtn.addEventListener('click', () => {
+      generateNewTest();
+    });
+
+    init();
+  })();
+</script>
+</body>
+</html>
